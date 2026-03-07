@@ -1,22 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <title>Portfolio</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portfolio</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    body { margin: 0; display: flex; min-height: 100vh; align-items: center; justify-content: center; background: #0f1724; color: #e6eef8; }
+    .container { max-width: 1000px; width: 95%; display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+    #about { background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); padding: 24px; border-radius: 12px; box-shadow: 0 6px 20px rgba(2,6,23,0.6); }
+    #about img { width: 100%; height: auto; border-radius: 8px; display:block; }
+    #about h1 { margin: 12px 0 6px; font-size: 1.25rem; }
+    #about p { margin: 0 0 12px; color: #cbd5e1; }
+    #canvas-wrap { background: #081226; border-radius: 12px; min-height: 400px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .note { font-size: 0.9rem; color: #94a3b8; margin-top: 8px; }
+    @media (max-width: 720px) { .container { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
-    <!-- Other sections -->
+  <main class="container">
     <section id="about">
-        <img src="https://example.com/profile-image.jpg" alt="Profile Image">
-        <!-- Other content -->
+      <img src="https://via.placeholder.com/600x600.png?text=Your+Photo" alt="Profile Image">
+      <h1>Hi, I'm Kabir</h1>
+      <p>Frontend developer • 3D experiments • Open-source enthusiast</p>
+      <p class="note">Replace the placeholder image URL with your real profile image URL.</p>
+      <p><a href="#" style="color:#90cdf4;text-decoration:none"><i class="fa-solid fa-envelope"></i> Contact</a></p>
     </section>
-    <!-- Other sections -->
-    <script>
-        if (document.readyState === 'loading') {
-            // Code for initializing Three.js
-        }
-    </script>
+
+    <section id="canvas-wrap">
+      <!-- Three.js canvas will be inserted here -->
+      <div id="three-container" style="width:100%; height:100%;"></div>
+    </section>
+  </main>
+
+  <!-- Three.js CDN (r134 as an example). You can change version if you prefer. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      // Basic Three.js scene with a rotating cube so something visible renders
+      const container = document.getElementById('three-container');
+
+      // Renderer
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      container.appendChild(renderer.domElement);
+
+      // Scene & Camera
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+      camera.position.set(2, 2, 4);
+
+      // Lights
+      const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambient);
+      const dir = new THREE.DirectionalLight(0xffffff, 0.6);
+      dir.position.set(5, 5, 5);
+      scene.add(dir);
+
+      // Cube
+      const geometry = new THREE.BoxGeometry(1.4, 1.4, 1.4);
+      const material = new THREE.MeshStandardMaterial({ color: 0x66ccff, metalness: 0.2, roughness: 0.4 });
+      const cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+
+      // Responsive resize
+      function onResize() {
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      }
+      window.addEventListener('resize', onResize);
+
+      // Animation
+      const clock = new THREE.Clock();
+      function animate() {
+        const t = clock.getElapsedTime();
+        cube.rotation.x = t * 0.5;
+        cube.rotation.y = t * 0.8;
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+      onResize();
+      animate();
+    });
+  </script>
 </body>
 </html>
